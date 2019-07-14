@@ -15,14 +15,20 @@ let posenet = null
 /**
  * Start PoseNet on click
  */
-$startPosenet.addEventListener('click', async function () {
+$startPosenet.addEventListener('click', function () {
+  $startPosenet.classList.add('loading')
   this.disabled = true
-  posenet = await Posenet.load()
-  $startTraining.disabled = false
 
-  Scene.use(async function () {
-    const pose = await posenet.estimateSinglePose($scene)
-    drawKeypoints(pose)
+  // Wait a frame to allow loader to be applied
+  setTimeout(async function () {
+    posenet = await Posenet.load()
+    $startTraining.disabled = false
+    $startPosenet.classList.remove('loading')
+
+    Scene.use(async function () {
+      const pose = await posenet.estimateSinglePose($scene)
+      drawKeypoints(pose)
+    })  
   })
 })
 
