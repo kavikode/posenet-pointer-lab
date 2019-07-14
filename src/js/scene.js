@@ -11,14 +11,14 @@ export default class {
     this.scene = new BABYLON.Scene(this.engine)
     this.head = null
 
-    this.createScene()
+    this.createScene($canvas)
     this.startLoop()
   }
 
   /**
    * Creates the scene
    */
-  createScene () {
+  createScene ($canvas) {
     const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,5), this.scene)
 
     BABYLON.SceneLoader.Append('./3d/', 'scene.gltf', this.scene, scene => {
@@ -29,6 +29,7 @@ export default class {
       scene.activeCamera.alpha += Math.PI
 
       camera.attachControl(scene)
+      $canvas.style.width = '100%'
     })
   }
 
