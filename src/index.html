@@ -4,13 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>PoseNet Plus 🐭</title>
+  <title>PoseNet+ 🐭</title>
 
   <link rel="stylesheet" href="css/main.css">
+  <script src="lib/babylon.min.js"></script>
+  <script src="lib/babylon.loaders.min.js"></script>
 </head>
 <body>
-  <button>Start</button>
-  <button>Train</button>
+  <h1>PoseNet+ 🐭</h1>
+  <ul>
+    <li>
+      <button id="start-posenet">1. Start PoseNet</button>
+    </li>
+    <li>
+      <button id="start-training" disabled>2. Strat Training</button>
+    </li>
+  </ul>
+  <p>
+    <canvas id="scene" width=640 height=480></canvas>
+    <canvas id="overlay" width=640 height=480></canvas>
+  </p>
   <script src="js/app.js"></script>
 </body>
 </html>
