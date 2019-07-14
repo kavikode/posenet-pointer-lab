@@ -1,0 +1,25 @@
+doctype html
+head
+  meta(charset='UTF-8')
+  meta(name='viewport' content='width=device-width, initial-scale=1.0')
+  meta(http-equiv='X-UA-Compatible' content='ie=edge')
+  title 🐭 PoseNet+
+  link(rel='stylesheet' href='css/main.styl')
+  //- Reduce build time
+  script(src='lib/babylon.min.js')
+  script(src='lib/babylon.loaders.min.js')
+
+aside
+  .panel.full-height
+    .panel-header
+      h1.panel-title 🐭 PoseNet+
+      p Takes PoseNet poses as input and outputs head pose data
+    .panel-body
+      canvas#scene(width=640 height=480)
+      canvas#overlay(width=640 height=480)
+    .panel-footer
+      .btn-group.btn-group-block
+        button#start-posenet.btn Start PoseNet
+        button#start-training.btn(disabled) Start Training
+
+script(src='js/app.js')

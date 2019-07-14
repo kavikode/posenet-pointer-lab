@@ -1,0 +1,31 @@
+@import 'spectre.css'
+$sidebarWidth = 300px
+$gutter = 20px
+
+*
+  position relative
+
+html, body
+  height 100%
+
+body > aside
+  width $sidebarWidth
+  position absolute
+  height 100%
+  
+body > article
+  margin-left $sidebarWidth + $gutter
+  height 100%
+
+#overlay
+  position absolute
+  top 0
+  left 0
+  pointer-events none
+  width 100%
+  height auto
+  padding inherit
+
+// Helpers
+.full-height
+  height 100%
