@@ -18,3 +18,15 @@ button {
   padding: 20px;
   width: 250px;
 }
+
+p {
+  position: relative;
+  margin-left: 290px;
+}
+
+#overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}

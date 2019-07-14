@@ -6,10 +6,19 @@ export default class {
    * @param {CANVAS} $canvas The HTML Canvas to contain our Babylon (and PoseNet) scene
    */
   constructor ($canvas) {
+    this.plugins = []
     this.engine = new BABYLON.Engine($canvas, true)
     this.scene = new BABYLON.Scene(this.engine)
     this.head = null
 
+    this.createScene()
+    this.startLoop()
+  }
+
+  /**
+   * Creates the scene
+   */
+  createScene () {
     const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,5), this.scene)
 
     BABYLON.SceneLoader.Append('./3d/', 'scene.gltf', this.scene, scene => {
@@ -21,9 +30,26 @@ export default class {
 
       camera.attachControl(scene)
     })
+  }
 
+  /**
+   * Starts the render loop
+   */
+  startLoop () {
     this.engine.runRenderLoop(() => {
       this.scene.render()
+
+      this.plugins.forEach(plugin => {
+        plugin.call()
+      })
     })
+  }
+
+  /**
+   * Adds a plugin to be called on every scene render
+   * @param {Function} callback The callback to call
+   */
+  use (callback) {
+    this.plugins.push(callback)
   }
 }
