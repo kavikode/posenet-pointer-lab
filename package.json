@@ -1,0 +1,20 @@
+{
+  "name": "posenet-plus",
+  "version": "0.0.1",
+  "description": "Extracts head pose data (pitch, yaw, roll) from PoseNet estimations and optionally moves a pointer/mouse cursor on the screen 🐭",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel src/index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/labofoz/PoseNet-Plus.git"
+  },
+  "author": "Oz Ramos <labofoz@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/labofoz/PoseNet-Plus/issues"
+  },
+  "homepage": "https://github.com/labofoz/PoseNet-Plus#readme"
+}
