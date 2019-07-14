@@ -34,9 +34,11 @@ overlayCtx.fillStyle = '#f0f'
 function drawKeypoints (pose) {
   overlayCtx.clearRect(0, 0, $overlay.width, $overlay.height)
   for (let i = 0; i < 5; i++) {
-    overlayCtx.beginPath()
-    overlayCtx.arc(pose.keypoints[i].position.x, pose.keypoints[i].position.y, 10, 0, 2 * Math.PI)
-    overlayCtx.fill()
+    if (pose.keypoints[i].score > .7) {
+      overlayCtx.beginPath()
+      overlayCtx.arc(pose.keypoints[i].position.x, pose.keypoints[i].position.y, 10, 0, 2 * Math.PI)
+      overlayCtx.fill()
+    }
   }
   pose.keypoints[0]
 }
