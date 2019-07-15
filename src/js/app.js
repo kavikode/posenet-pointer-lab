@@ -71,6 +71,24 @@ $saveToLocalhost.addEventListener('click', function () {
 })
 
 /**
+ * Save to file
+ */
+$saveToFile.addEventListener('click', function () {
+  this.classList.add('loading')
+  setTimeout(() => {
+    let $a = document.createElement("a")
+    let file = new Blob([JSON.stringify(training)], {type: 'application/json'})
+    $a.href = URL.createObjectURL(file)
+    $a.download = `posenet-plus-training-${training.labels.length}.json`
+    $a.click()
+    $a.remove()
+    
+    localStorage.setItem('training', JSON.stringify(training))
+    this.classList.remove('loading')
+  })
+})
+
+/**
  * Start Training
  */
 $startTraining.addEventListener('click', function () {
