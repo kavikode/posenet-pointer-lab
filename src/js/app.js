@@ -8,6 +8,8 @@ const overlayCtx = $overlay.getContext('2d')
 const $startPosenet = document.querySelector('#start-posenet')
 const $startTraining = document.querySelector('#start-training')
 const $sampleSize = document.querySelector('#sample-size')
+const $trainingFeatures = document.querySelector('#training-features')
+const $trainingLabels = document.querySelector('#training-labels')
 let posenet = null
 let curPose = {}
 let training = {
@@ -96,7 +98,8 @@ $startTraining.addEventListener('click', function () {
       ])
     } else if (curSampleIndex === sampleSize) {
       $startTraining.classList.remove('loading')
-      console.log(training)
+      $trainingFeatures.value = JSON.stringify(training.features, null, 2)
+      $trainingLabels.value = JSON.stringify(training.labels, null, 2)
     }
     curSampleIndex++
   })

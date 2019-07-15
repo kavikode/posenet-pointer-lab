@@ -27,4 +27,18 @@ aside
         button#start-posenet.btn.btn-primary Start PoseNet
         button#start-training.btn.btn-primary(disabled) Start Training
 
+article
+  .panel.full-height
+    .panel-header
+      h2.panel-title Training Set
+    .panel-body
+      .container
+        .columns
+          .column.col-6
+            label.form-label(for='training-features') Features
+            textarea#training-features.form-input(rows='10')
+          .column.col-6
+            label.form-label(for='training-labels') Labels
+            textarea#training-labels.form-input(rows='10')
+
 script(src='js/app.js')
