@@ -10,6 +10,8 @@ const $startTraining = document.querySelector('#start-training')
 const $sampleSize = document.querySelector('#sample-size')
 const $trainingFeatures = document.querySelector('#training-features')
 const $trainingLabels = document.querySelector('#training-labels')
+const $saveToLocalhost = document.querySelector('#save-to-localhost')
+const $saveToFile = document.querySelector('#save-to-file')
 let posenet = null
 let curPose = {}
 let training = {
@@ -58,6 +60,17 @@ function drawKeypoints (pose) {
 }
 
 /**
+ * Save to localstorage
+ */
+$saveToLocalhost.addEventListener('click', function () {
+  this.classList.add('loading')
+  setTimeout(() => {
+    localStorage.setItem('training', JSON.stringify(training))
+    this.classList.remove('loading')
+  })
+})
+
+/**
  * Start Training
  */
 $startTraining.addEventListener('click', function () {
@@ -96,10 +109,14 @@ $startTraining.addEventListener('click', function () {
         this.head.rotation.y,
         this.head.rotation.z
       ])
+    // Enable save buttons
     } else if (curSampleIndex === sampleSize) {
       $startTraining.classList.remove('loading')
-      $trainingFeatures.value = JSON.stringify(training.features, null, 2)
-      $trainingLabels.value = JSON.stringify(training.labels, null, 2)
+      $trainingFeatures.value = JSON.stringify(training.features.slice(0, 3), null, 2)
+      $trainingLabels.value = JSON.stringify(training.labels.slice(0, 3), null, 2)
+
+      $saveToLocalhost.disabled = false
+      $saveToFile.disabled = false
     }
     curSampleIndex++
   })

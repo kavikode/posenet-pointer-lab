@@ -23,9 +23,12 @@ aside
         label.form-label(for='sample-size') Sample Size
         input#sample-size.form-input(value=100 placeholder='Number of samples to collect')
     .panel-footer
-      .btn-group.btn-group-block
+      p.btn-group.btn-group-block
         button#start-posenet.btn.btn-primary Start PoseNet
         button#start-training.btn.btn-primary(disabled) Start Training
+      p.btn-group.btn-group-block
+        button#save-to-localhost.btn.btn-primary(disabled) Save to localStorage
+        button#save-to-file.btn.btn-primary(disabled) Save to File
 
 article
   .panel.full-height
@@ -35,10 +38,10 @@ article
       .container
         .columns
           .column.col-6
-            label.form-label(for='training-features') Features
+            label.form-label(for='training-features') Features <small>(first 3)</small>
             textarea#training-features.form-input(rows='10')
           .column.col-6
-            label.form-label(for='training-labels') Labels
+            label.form-label(for='training-labels') Labels <small>(first 3)</small>
             textarea#training-labels.form-input(rows='10')
 
 script(src='js/app.js')
