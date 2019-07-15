@@ -41,7 +41,7 @@ export default class {
       this.scene.render()
 
       this.plugins.forEach(plugin => {
-        plugin.call()
+        plugin.call(this)
       })
     })
   }

@@ -17,9 +17,14 @@ aside
     .panel-body
       canvas#scene(width=640 height=480)
       canvas#overlay(width=640 height=480)
+    .panel-body
+      b Training Parameters
+      .form-group
+        label.form-label(for='sample-size') Sample Size
+        input#sample-size.form-input(value=100 placeholder='Number of samples to collect')
     .panel-footer
       .btn-group.btn-group-block
-        button#start-posenet.btn Start PoseNet
-        button#start-training.btn(disabled) Start Training
+        button#start-posenet.btn.btn-primary Start PoseNet
+        button#start-training.btn.btn-primary(disabled) Start Training
 
 script(src='js/app.js')
