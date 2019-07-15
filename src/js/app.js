@@ -78,16 +78,16 @@ $startTraining.addEventListener('click', function () {
       
       // Features [x1, y1...x5, y5]
       training.features.push([
-        curPose.keypoints[0].position.x,
-        curPose.keypoints[0].position.y,
-        curPose.keypoints[1].position.x,
-        curPose.keypoints[1].position.y,
-        curPose.keypoints[2].position.x,
-        curPose.keypoints[2].position.y,
-        curPose.keypoints[3].position.x,
-        curPose.keypoints[3].position.y,
-        curPose.keypoints[4].position.x,
-        curPose.keypoints[4].position.y
+        curPose.keypoints[0].position.x / this.$canvas.width,
+        curPose.keypoints[0].position.y / this.$canvas.height,
+        curPose.keypoints[1].position.x / this.$canvas.width,
+        curPose.keypoints[1].position.y / this.$canvas.height,
+        curPose.keypoints[2].position.x / this.$canvas.width,
+        curPose.keypoints[2].position.y / this.$canvas.height,
+        curPose.keypoints[3].position.x / this.$canvas.width,
+        curPose.keypoints[3].position.y / this.$canvas.height,
+        curPose.keypoints[4].position.x / this.$canvas.width,
+        curPose.keypoints[4].position.y / this.$canvas.height
       ])
 
       // Labels = [Pitch, Yaw, Roll]
