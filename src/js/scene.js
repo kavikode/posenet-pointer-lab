@@ -15,6 +15,7 @@ export default class {
 
     this.createScene()
     this.startLoop()
+    this.addEventListeners()
   }
 
   /**
@@ -41,7 +42,6 @@ export default class {
   startLoop () {
     this.engine.runRenderLoop(() => {
       this.scene.render()
-      this.camera.detachControl(this.$canvas)
 
       this.plugins.forEach(plugin => {
         plugin.call(this)
@@ -56,26 +56,28 @@ export default class {
   use (callback) {
     this.plugins.push(callback)
   }
+
+  /**
+   * Move the head with the mouse
+   */
+  addEventListeners () {
+    let currentPosition = {x: 0, y: 0}
+    let clicked = false
+
+    this.$canvas.addEventListener('pointerdown', (evt) => {
+      currentPosition.x = evt.clientX
+      currentPosition.y = evt.clientY
+      clicked = true
+    })
+    this.$canvas.addEventListener('pointermove', (evt) => {
+      if (!clicked) {
+        return
+      }
+      this.head.rotation.y = (evt.clientX + currentPosition.x) / 20
+      this.head.rotation.x = (evt.clientY + currentPosition.y) / 20
+    })
+    this.$canvas.addEventListener('pointerup', () => {
+      clicked = false
+    })
+  }
 }
-
-/**
- * Rotate head
- */
-// canvas.addEventListener("pointerdown", function (evt) {
-//   currentPosition.x = evt.clientX;
-//   currentPosition.y = evt.clientY;
-  
-//   clicked = true;
-// });
-
-// canvas.addEventListener("pointermove", function (evt) {
-//   if (!clicked) {
-//     return;
-//   }
-//   cylinder.rotation.y = (evt.clientX - currentPosition.x) / 10.0;
-//   cylinder.rotation.x = (evt.clientY - currentPosition.y) / 10.0;
-// });
-
-// canvas.addEventListener("pointerup", function (evt) {
-//   clicked = false;
-// });
