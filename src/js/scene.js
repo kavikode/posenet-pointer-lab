@@ -6,30 +6,33 @@ export default class {
    * @param {CANVAS} $canvas The HTML Canvas to contain our Babylon (and PoseNet) scene
    */
   constructor ($canvas) {
+    this.$canvas = $canvas
     this.plugins = []
     this.engine = new BABYLON.Engine($canvas, true)
     this.scene = new BABYLON.Scene(this.engine)
     this.head = null
+    this.camera = null
 
-    this.createScene($canvas)
+    this.createScene()
     this.startLoop()
+    this.addEventListeners()
   }
 
   /**
    * Creates the scene
    */
-  createScene ($canvas) {
-    const camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,5), this.scene)
-
+  createScene () {
+    this.camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0,0,5), this.scene)
+    
     BABYLON.SceneLoader.Append('./3d/', 'scene.gltf', this.scene, scene => {
       this.head = scene.meshes[0]
       this.head.rotationQuaternion = null
       this.head.rotation.y = Math.PI
-      scene.createDefaultCameraOrLight(true, true, true)
+      scene.createDefaultCameraOrLight(true, true, false)
       scene.activeCamera.alpha += Math.PI
 
-      camera.attachControl(scene)
-      $canvas.style.width = '100%'
+      this.$canvas.style.width = '100%'
+      this.camera.detachControl(this.$canvas)
     })
   }
 
@@ -41,7 +44,7 @@ export default class {
       this.scene.render()
 
       this.plugins.forEach(plugin => {
-        plugin.call()
+        plugin.call(this)
       })
     })
   }
@@ -52,5 +55,29 @@ export default class {
    */
   use (callback) {
     this.plugins.push(callback)
+  }
+
+  /**
+   * Move the head with the mouse
+   */
+  addEventListeners () {
+    let currentPosition = {x: 0, y: 0}
+    let clicked = false
+
+    this.$canvas.addEventListener('pointerdown', (evt) => {
+      currentPosition.x = evt.clientX
+      currentPosition.y = evt.clientY
+      clicked = true
+    })
+    this.$canvas.addEventListener('pointermove', (evt) => {
+      if (!clicked) {
+        return
+      }
+      this.head.rotation.y = (evt.clientX + currentPosition.x) / 20
+      this.head.rotation.x = (evt.clientY + currentPosition.y) / 20
+    })
+    this.$canvas.addEventListener('pointerup', () => {
+      clicked = false
+    })
   }
 }
