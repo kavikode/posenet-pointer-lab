@@ -7,6 +7,7 @@ const $overlay = document.querySelector('#overlay')
 const overlayCtx = $overlay.getContext('2d')
 const $startPosenet = document.querySelector('#start-posenet')
 const $startTraining = document.querySelector('#start-training')
+const $createData = document.querySelector('#create-data')
 const $sampleSize = document.querySelector('#sample-size')
 const $trainingFeatures = document.querySelector('#training-features')
 const $trainingLabels = document.querySelector('#training-labels')
@@ -23,6 +24,17 @@ let training = {
 const Scene = new BabylonScene($scene)
 
 /**
+ * Autoload data from localstorage
+ */
+let localTrainingData = localStorage.getItem('training')
+if (localTrainingData) {
+  $startTraining.disabled = false
+  training = JSON.parse(localTrainingData)
+  $trainingFeatures.value = JSON.stringify(training.features, null, 2)
+  $trainingLabels.value = JSON.stringify(training.labels, null, 2)
+}
+
+/**
  * Start PoseNet on click
  */
 $startPosenet.addEventListener('click', function () {
@@ -32,7 +44,7 @@ $startPosenet.addEventListener('click', function () {
   // Wait a frame to allow loader to be applied
   setTimeout(async function () {
     posenet = await Posenet.load()
-    $startTraining.disabled = false
+    $createData.disabled = false
     $startPosenet.classList.remove('loading')
 
     Scene.use(async function () {
@@ -79,7 +91,7 @@ $saveToFile.addEventListener('click', function () {
     let $a = document.createElement("a")
     let file = new Blob([JSON.stringify(training)], {type: 'application/json'})
     $a.href = URL.createObjectURL(file)
-    $a.download = `posenet-plus-training-${training.labels.length}.json`
+    $a.download = `posenet-cursor-training-${training.labels.length}.json`
     $a.click()
     $a.remove()
     
@@ -89,13 +101,13 @@ $saveToFile.addEventListener('click', function () {
 })
 
 /**
- * Start Training
+ * Collect training data
  */
-$startTraining.addEventListener('click', function () {
+$createData.addEventListener('click', function () {
   const sampleSize = +$sampleSize.value
   let curSampleIndex = 0
-  $startTraining.classList.add('loading')
-  $startTraining.disabled = true
+  $createData.classList.add('loading')
+  $createData.disabled = true
   
   Scene.use(function () {
     if (curSampleIndex < sampleSize) {
@@ -129,7 +141,8 @@ $startTraining.addEventListener('click', function () {
       ])
     // Enable save buttons
     } else if (curSampleIndex === sampleSize) {
-      $startTraining.classList.remove('loading')
+      $createData.classList.remove('loading')
+      $startTraining.disabled = false
       $trainingFeatures.value = JSON.stringify(training.features.slice(0, 3), null, 2)
       $trainingLabels.value = JSON.stringify(training.labels.slice(0, 3), null, 2)
 
