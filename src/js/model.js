@@ -6,6 +6,9 @@ const BATCH_SIZE = 50
 const LEARNING_RATE = 0.01
 const tensors = {}
 let rawData = {}
+let trainLogs = []
+
+const $chart = document.querySelector('#chart')
 
 /**
  * Start training
@@ -69,12 +72,23 @@ function splitTrainingAndTest (data) {
 }
 
 /**
- * Builds a linear regression model
+ * Builds a Multi Layer Perceptron Regression Model each with
+ * with 2 hidden layers, each with 10 units activated by sigmoid
  */
 function createLinearRegressionModel () {
   const model = tf.sequential()
-  console.log(tensors.trainFeatures.shape, rawData.trainFeatures[0].length)
-  model.add(tf.layers.dense({inputShape: [rawData.trainFeatures[0].length], units: 1}))
+  model.add(tf.layers.dense({
+    inputShape: [rawData.trainFeatures[0].length],
+    units: 50,
+    activation: 'sigmoid',
+    kernelInitializer: 'leCunNormal'
+  }))
+  model.add(tf.layers.dense({
+    units: 50,
+    activation: 'sigmoid',
+    kernelInitializer: 'leCunNormal'
+  }))
+  model.add(tf.layers.dense({units: 1}))
   model.summary()
 
   return model
@@ -97,6 +111,8 @@ async function compileAndTrain (model) {
     callbacks: {
       onEpochEnd: async (epoch, logs) => {
         console.log(`⏳ Epoch ${epoch + 1} of ${NUM_EPOCHS} completed`)
+        trainLogs.push(logs)
+        tfvis.show.history($chart, trainLogs, ['loss', 'val_loss'])
       }
     }
   })
