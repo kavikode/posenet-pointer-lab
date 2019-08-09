@@ -3,7 +3,7 @@ head
   meta(charset='UTF-8')
   meta(name='viewport' content='width=device-width, initial-scale=1.0')
   meta(http-equiv='X-UA-Compatible' content='ie=edge')
-  title 🐭 PoseNet+
+  title PoseNet Cursor
   link(rel='stylesheet' href='css/main.styl')
   //- Reduce build time
   script(src='lib/babylon.min.js')
@@ -12,20 +12,19 @@ head
 aside
   .panel.full-height
     .panel-header
-      h1.panel-title 🐭 PoseNet+
-      p Takes PoseNet poses as input and outputs head pose data
+      h2.panel-title PoseNet Cursor
     .panel-body
       canvas#scene(width=640 height=480)
       canvas#overlay(width=640 height=480)
     .panel-body
-      b Training Parameters
+      b Training Set Parameters
       .form-group
         label.form-label(for='sample-size') Sample Size
         input#sample-size.form-input(value=100 placeholder='Number of samples to collect')
     .panel-footer
       p.btn-group.btn-group-block
         button#start-posenet.btn.btn-primary Start PoseNet
-        button#start-training.btn.btn-primary(disabled) Start Training
+        button#create-data.btn.btn-primary(disabled) Create Data
       p.btn-group.btn-group-block
         button#save-to-localhost.btn.btn-primary(disabled) Save to localStorage
         button#save-to-file.btn.btn-primary(disabled) Save to File
@@ -35,7 +34,7 @@ article
     .panel-header
       h2.panel-title Training Set
     .panel-body
-      .container
+      .container.full-height
         .columns
           .column.col-6
             label.form-label(for='training-features') Features <small>(first 3)</small>
@@ -43,5 +42,13 @@ article
           .column.col-6
             label.form-label(for='training-labels') Labels <small>(first 3)</small>
             textarea#training-labels.form-input(rows='10')
+        .columns
+          .column.col-12
+            #chart
+    .panel-footer
+      p.btn-group.btn-group-block
+        button#start-training.btn.btn-primary(disabled) Start Training
+        button#use-model.btn.btn-primary(disabled) Use Model
 
-script(src='js/app.js')
+script(src='js/ui.js')
+script(src='js/model.js')

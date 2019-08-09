@@ -1,5 +1,7 @@
 import BabylonScene from './scene'
 import * as Posenet from '@tensorflow-models/posenet'
+import * as tf from '@tensorflow/tfjs'
+import scene from './scene';
 
 // Cache elements
 const $scene = document.querySelector('#scene')
@@ -7,6 +9,8 @@ const $overlay = document.querySelector('#overlay')
 const overlayCtx = $overlay.getContext('2d')
 const $startPosenet = document.querySelector('#start-posenet')
 const $startTraining = document.querySelector('#start-training')
+const $useModel = document.querySelector('#use-model')
+const $createData = document.querySelector('#create-data')
 const $sampleSize = document.querySelector('#sample-size')
 const $trainingFeatures = document.querySelector('#training-features')
 const $trainingLabels = document.querySelector('#training-labels')
@@ -14,13 +18,24 @@ const $saveToLocalhost = document.querySelector('#save-to-localhost')
 const $saveToFile = document.querySelector('#save-to-file')
 let posenet = null
 let curPose = {}
-let training = {
+let training = window.training = {
   features: [],
   labels: []
 }
 
 // Start a new scene
 const Scene = new BabylonScene($scene)
+
+/**
+ * Autoload data from localstorage
+ */
+let localTrainingData = localStorage.getItem('training')
+if (localTrainingData) {
+  $startTraining.disabled = false
+  window.training = training = JSON.parse(localTrainingData)
+  $trainingFeatures.value = JSON.stringify(training.features, null, 2)
+  $trainingLabels.value = JSON.stringify(training.labels, null, 2)
+}
 
 /**
  * Start PoseNet on click
@@ -32,7 +47,7 @@ $startPosenet.addEventListener('click', function () {
   // Wait a frame to allow loader to be applied
   setTimeout(async function () {
     posenet = await Posenet.load()
-    $startTraining.disabled = false
+    $createData.disabled = false
     $startPosenet.classList.remove('loading')
 
     Scene.use(async function () {
@@ -76,10 +91,10 @@ $saveToLocalhost.addEventListener('click', function () {
 $saveToFile.addEventListener('click', function () {
   this.classList.add('loading')
   setTimeout(() => {
-    let $a = document.createElement("a")
+    let $a = document.createElement('a')
     let file = new Blob([JSON.stringify(training)], {type: 'application/json'})
     $a.href = URL.createObjectURL(file)
-    $a.download = `posenet-plus-training-${training.labels.length}.json`
+    $a.download = `posenet-cursor-training-${training.labels.length}.json`
     $a.click()
     $a.remove()
     
@@ -89,13 +104,13 @@ $saveToFile.addEventListener('click', function () {
 })
 
 /**
- * Start Training
+ * Collect training data
  */
-$startTraining.addEventListener('click', function () {
+$createData.addEventListener('click', function () {
   const sampleSize = +$sampleSize.value
   let curSampleIndex = 0
-  $startTraining.classList.add('loading')
-  $startTraining.disabled = true
+  $createData.classList.add('loading')
+  $createData.disabled = true
   
   Scene.use(function () {
     if (curSampleIndex < sampleSize) {
@@ -105,7 +120,7 @@ $startTraining.addEventListener('click', function () {
       
       this.head.position.x = Math.random() * 2000 - 1000
       this.head.position.y = Math.random() * 2000 - 1000
-      this.head.position.z = Math.random() * -1500  
+      this.head.position.z = Math.random() * -2000 - 1000
       
       // Features [x1, y1...x5, y5]
       training.features.push([
@@ -129,7 +144,9 @@ $startTraining.addEventListener('click', function () {
       ])
     // Enable save buttons
     } else if (curSampleIndex === sampleSize) {
-      $startTraining.classList.remove('loading')
+      window.training = training
+      $createData.classList.remove('loading')
+      $startTraining.disabled = false
       $trainingFeatures.value = JSON.stringify(training.features.slice(0, 3), null, 2)
       $trainingLabels.value = JSON.stringify(training.labels.slice(0, 3), null, 2)
 
@@ -137,5 +154,29 @@ $startTraining.addEventListener('click', function () {
       $saveToFile.disabled = false
     }
     curSampleIndex++
+  })
+})
+
+/**
+ * Use local model
+ */
+$useModel.addEventListener('click', function () {
+  const model = window.model
+  Scene.use(function () {
+    tf.tidy(() => {
+      const pose = tf.tensor2d([curPose.keypoints[0].position.x / this.$canvas.width,
+        curPose.keypoints[0].position.y / this.$canvas.height,
+        curPose.keypoints[1].position.x / this.$canvas.width,
+        curPose.keypoints[1].position.y / this.$canvas.height,
+        curPose.keypoints[2].position.x / this.$canvas.width,
+        curPose.keypoints[2].position.y / this.$canvas.height,
+        curPose.keypoints[3].position.x / this.$canvas.width,
+        curPose.keypoints[3].position.y / this.$canvas.height,
+        curPose.keypoints[4].position.x / this.$canvas.width,
+        curPose.keypoints[4].position.y / this.$canvas.height], [1, 10])
+
+        const prediction = model.predict(pose)
+        console.log('Rotation X', prediction.dataSync(), this.head)
+    })
   })
 })
