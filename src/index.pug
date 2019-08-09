@@ -42,8 +42,12 @@ article
           .column.col-6
             label.form-label(for='training-labels') Labels <small>(first 3)</small>
             textarea#training-labels.form-input(rows='10')
+        .columns
+          .column.col-12
+            #chart
     .panel-footer
       p.btn-group.btn-group-block
         button#start-training.btn.btn-primary(disabled) Start Training
 
-script(src='js/app.js')
+script(src='js/ui.js')
+script(src='js/model.js')

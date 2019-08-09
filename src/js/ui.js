@@ -15,7 +15,7 @@ const $saveToLocalhost = document.querySelector('#save-to-localhost')
 const $saveToFile = document.querySelector('#save-to-file')
 let posenet = null
 let curPose = {}
-let training = {
+let training = window.training = {
   features: [],
   labels: []
 }
@@ -29,7 +29,7 @@ const Scene = new BabylonScene($scene)
 let localTrainingData = localStorage.getItem('training')
 if (localTrainingData) {
   $startTraining.disabled = false
-  training = JSON.parse(localTrainingData)
+  window.training = training = JSON.parse(localTrainingData)
   $trainingFeatures.value = JSON.stringify(training.features, null, 2)
   $trainingLabels.value = JSON.stringify(training.labels, null, 2)
 }
@@ -88,7 +88,7 @@ $saveToLocalhost.addEventListener('click', function () {
 $saveToFile.addEventListener('click', function () {
   this.classList.add('loading')
   setTimeout(() => {
-    let $a = document.createElement("a")
+    let $a = document.createElement('a')
     let file = new Blob([JSON.stringify(training)], {type: 'application/json'})
     $a.href = URL.createObjectURL(file)
     $a.download = `posenet-cursor-training-${training.labels.length}.json`
@@ -141,6 +141,7 @@ $createData.addEventListener('click', function () {
       ])
     // Enable save buttons
     } else if (curSampleIndex === sampleSize) {
+      window.training = training
       $createData.classList.remove('loading')
       $startTraining.disabled = false
       $trainingFeatures.value = JSON.stringify(training.features.slice(0, 3), null, 2)
