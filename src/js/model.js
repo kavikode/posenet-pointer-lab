@@ -1,14 +1,33 @@
 import * as tf from '@tensorflow/tfjs'
 import * as tfvis from '@tensorflow/tfjs-vis'
 
-const NUM_EPOCHS = 200
+const NUM_EPOCHS = 100
 const BATCH_SIZE = 50
-const LEARNING_RATE = 0.01
+const LEARNING_RATE = 0.001
 const tensors = {}
 let rawData = {}
 let trainLogs = []
+let localModel = null
 
+const $useModel = document.querySelector('#use-model')
 const $chart = document.querySelector('#chart')
+
+/**
+ * Load model if it exists
+ */
+maybeLoadLocalModel()
+async function maybeLoadLocalModel () {
+  console.log('Checking for local model...')
+  localModel = await tf.loadLayersModel('localstorage://posenetCursor')
+
+  if (localModel) {
+    window.model = localModel
+    $useModel.disabled = false
+    console.log('...model loaded 🎉', localModel)
+  } else {
+    console.log('...no local models found')
+  }
+}
 
 /**
  * Start training
@@ -19,7 +38,6 @@ $startTraining.addEventListener('click', function () {
   rawData = splitTrainingAndTest(training)
 
   // Setup tensors
-  console.log(rawData.trainFeatures, rawData.trainTargets.map(i => [i[0]]))
   tensors.rawTrainFeatures = tf.tensor2d(rawData.trainFeatures)
   tensors.trainTargetA = tf.tensor2d(rawData.trainTargets.map(i => [i[0]]))
   tensors.trainTargetB = tf.tensor2d(rawData.trainTargets.map(i => [i[1]]))
@@ -77,18 +95,22 @@ function splitTrainingAndTest (data) {
  */
 function createLinearRegressionModel () {
   const model = tf.sequential()
-  model.add(tf.layers.dense({
-    inputShape: [rawData.trainFeatures[0].length],
-    units: 50,
-    activation: 'sigmoid',
-    kernelInitializer: 'leCunNormal'
-  }))
-  model.add(tf.layers.dense({
-    units: 50,
-    activation: 'sigmoid',
-    kernelInitializer: 'leCunNormal'
-  }))
-  model.add(tf.layers.dense({units: 1}))
+  // Simple linear regression
+  model.add(tf.layers.dense({inputShape: [rawData.trainFeatures[0].length], units: 1}));
+
+  // Multi layer perceptron
+  // model.add(tf.layers.dense({
+  //   inputShape: [rawData.trainFeatures[0].length],
+  //   units: 50,
+  //   activation: 'sigmoid',
+  //   kernelInitializer: 'leCunNormal'
+  // }))
+  // model.add(tf.layers.dense({
+  //   units: 50,
+  //   activation: 'sigmoid',
+  //   kernelInitializer: 'leCunNormal'
+  // }))
+  // model.add(tf.layers.dense({units: 1}))
   model.summary()
 
   return model
@@ -116,4 +138,17 @@ async function compileAndTrain (model) {
       }
     }
   })
+
+  console.log('🎉 Training complete! Now running tests...')
+  const result = model.evaluate(tensors.testFeatures, tensors.testTargetA, {batchSize: BATCH_SIZE})
+  const testLoss = result.dataSync()[0]
+  const trainLoss = trainLogs[trainLogs.length - 1].loss
+  const valLoss = trainLogs[trainLogs.length - 1].val_loss
+
+  console.log(`Final train-set loss: ${trainLoss.toFixed(4)}`)
+  console.log(`Final validation-set loss: ${valLoss.toFixed(4)}`)
+  console.log(`Test-set loss: ${testLoss.toFixed(4)}`)
+
+  await model.save('localstorage://posenetCursor')
+  await model.save('downloads://posenetCursor')
 }

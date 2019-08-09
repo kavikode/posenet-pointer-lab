@@ -1,5 +1,7 @@
 import BabylonScene from './scene'
 import * as Posenet from '@tensorflow-models/posenet'
+import * as tf from '@tensorflow/tfjs'
+import scene from './scene';
 
 // Cache elements
 const $scene = document.querySelector('#scene')
@@ -7,6 +9,7 @@ const $overlay = document.querySelector('#overlay')
 const overlayCtx = $overlay.getContext('2d')
 const $startPosenet = document.querySelector('#start-posenet')
 const $startTraining = document.querySelector('#start-training')
+const $useModel = document.querySelector('#use-model')
 const $createData = document.querySelector('#create-data')
 const $sampleSize = document.querySelector('#sample-size')
 const $trainingFeatures = document.querySelector('#training-features')
@@ -117,7 +120,7 @@ $createData.addEventListener('click', function () {
       
       this.head.position.x = Math.random() * 2000 - 1000
       this.head.position.y = Math.random() * 2000 - 1000
-      this.head.position.z = Math.random() * -1500  
+      this.head.position.z = Math.random() * -2000 - 1000
       
       // Features [x1, y1...x5, y5]
       training.features.push([
@@ -151,5 +154,29 @@ $createData.addEventListener('click', function () {
       $saveToFile.disabled = false
     }
     curSampleIndex++
+  })
+})
+
+/**
+ * Use local model
+ */
+$useModel.addEventListener('click', function () {
+  const model = window.model
+  Scene.use(function () {
+    tf.tidy(() => {
+      const pose = tf.tensor2d([curPose.keypoints[0].position.x / this.$canvas.width,
+        curPose.keypoints[0].position.y / this.$canvas.height,
+        curPose.keypoints[1].position.x / this.$canvas.width,
+        curPose.keypoints[1].position.y / this.$canvas.height,
+        curPose.keypoints[2].position.x / this.$canvas.width,
+        curPose.keypoints[2].position.y / this.$canvas.height,
+        curPose.keypoints[3].position.x / this.$canvas.width,
+        curPose.keypoints[3].position.y / this.$canvas.height,
+        curPose.keypoints[4].position.x / this.$canvas.width,
+        curPose.keypoints[4].position.y / this.$canvas.height], [1, 10])
+
+        const prediction = model.predict(pose)
+        console.log('Rotation X', prediction.dataSync(), this.head)
+    })
   })
 })
